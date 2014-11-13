@@ -77,7 +77,7 @@ class Parser {
         return error
     }
     
-    func start(reader : ParserReader, parserNewPhoto : ParserNewPhoto) -> NSError? {
+    func start(reader : ParserReader, errorCallBack : (NSError) -> (), parserNewPhoto : ParserNewPhoto) {
         
         var error : NSError?
         
@@ -90,10 +90,11 @@ class Parser {
                 
             case let .Value(fileData):
                 error = self.handleData(fileData, parserNewPhoto)
-                
+            }
+            
+            if let _error = error {
+                errorCallBack(error!)
             }
         }
-        
-        return error
     }
 }

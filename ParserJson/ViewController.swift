@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 
         let parserTestReader = readJsonFile("test")
         let parser = Parser()
-        let error = parser.start(parserTestReader) { (photoResult : PhotoResult) -> Bool in
+        parser.start(parserTestReader, { (error : NSError) in println(error) } ) { (photoResult : PhotoResult) -> Bool in
             
             switch photoResult {
             case let .Error(photoError):
@@ -27,12 +27,6 @@ class ViewController: UIViewController {
             }
             
             return false    // continue always
-        }
-        
-        if let _error = error {
-            
-            println(_error.localizedDescription)
-            // alert...
         }
     }
 
