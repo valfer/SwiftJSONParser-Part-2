@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 
         let parserTestReader = readJsonFile("test")
         let parser = Parser()
-        let error = parser.start(parserTestReader) { (photoResult : PhotoResult) -> () in
+        let error = parser.start(parserTestReader) { (photoResult : PhotoResult) -> Bool in
             
             switch photoResult {
             case let .Error(photoError):
@@ -25,6 +25,8 @@ class ViewController: UIViewController {
                 println(photo.data + ": " + photo.titolo)
                 
             }
+            
+            return false    // continue always
         }
         
         if let _error = error {

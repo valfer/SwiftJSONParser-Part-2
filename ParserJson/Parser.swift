@@ -22,7 +22,14 @@ class Parser {
 
     // the reader is a func that receive a completion as parameter (called on finish)
     typealias ParserReader = (ReaderResult->())->()
-    typealias ParserNewPhoto = (PhotoResult)->()
+    typealias ParserNewPhoto = (PhotoResult)->Bool
+    
+    func StringFromJSON(ao : AnyObject?) -> String? {
+        return ao as? String
+    }
+    func DoubleFromJSON(ao : AnyObject?) -> Double? {
+        return ao as? Double
+    }
     
     func handleData(data : NSData, parserNewPhoto : ParserNewPhoto) -> NSError? {
 
@@ -35,23 +42,20 @@ class Parser {
                 
                 if let _jsonItem = jsonItem as? [String: AnyObject] {
          
-                    let titolo : AnyObject? = _jsonItem["titolo"]
-                    let autore : AnyObject? = _jsonItem["autore"]
-                    let latitudine : AnyObject? = _jsonItem["latitudine"]
-                    let longitudine : AnyObject? = _jsonItem["longitudine"]
-                    let data : AnyObject? = _jsonItem["data"]
-                    let descr : AnyObject? = _jsonItem["descr"]
-
                     var ok = false
-                    if let _titolo = titolo as String? {
-                        if let _autore = autore as? String {
-                            if let _latitudine = latitudine as? Double {
-                                if let _longitudine = longitudine as? Double {
-                                    if let _data = data as? String {
-                                        if let _descr = descr as? String {
+                    var toStop = false
+                    if let _titolo = StringFromJSON(_jsonItem["titolo"]) {
+                        if let _autore = StringFromJSON(_jsonItem["autore"]) {
+                            if let _latitudine = DoubleFromJSON(_jsonItem["latitudine"]) {
+                                if let _longitudine = DoubleFromJSON(_jsonItem["longitudine"]) {
+                                    if let _data = StringFromJSON(_jsonItem["data"]) {
+                                        if let _descr = StringFromJSON(_jsonItem["descr"]) {
                                             
                                             let photo = Photo(titolo: _titolo, autore: _autore, latitudine: _latitudine, longitudine: _longitudine, data: _data, descr: _descr)
-                                            parserNewPhoto(PhotoResult.Value(photo))
+                                            toStop = parserNewPhoto(PhotoResult.Value(photo))
+                                            if toStop {
+                                                break
+                                            }
                                             ok = true
                                         }
                                     }
@@ -67,7 +71,7 @@ class Parser {
                 }
             }
         } else {
-            error = NSError(domain: "Parser", code: 100, userInfo: [NSLocalizedDescriptionKey:"Json non contiene un array di oggetti"])
+            error = NSError(domain: "Parser", code: 100, userInfo: [NSLocalizedDescriptionKey:"Json is not an array of objects"])
         }
         
         return error
