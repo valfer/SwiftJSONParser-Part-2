@@ -67,6 +67,9 @@ class Parser {
                         // don't override error
                         let photoError = NSError(domain: "Parser", code: 101, userInfo: [NSLocalizedDescriptionKey:"Errore su un elemento dell'array"])
                         parserNewPhoto(PhotoResult.Error(photoError))
+                        if toStop {
+                            break
+                        }
                     }
                 }
             }
